@@ -11,7 +11,7 @@ const Index = () => {
       icon: <BookOpen className="w-8 h-8 text-primary-light" />,
       title: "Gerçek YKS Soruları",
       description: "Yapay zeka ile özelleştirilmiş gerçek YKS soruları ile pratik yapın",
-      onClick: () => navigate("/categories")
+      onClick: () => navigate("/question-solver")
     },
     {
       icon: <Trophy className="w-8 h-8 text-primary-light" />,
