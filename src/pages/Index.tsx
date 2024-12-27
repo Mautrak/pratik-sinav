@@ -11,21 +11,25 @@ const Index = () => {
       icon: <BookOpen className="w-8 h-8 text-primary-light" />,
       title: "Gerçek YKS Soruları",
       description: "Yapay zeka ile özelleştirilmiş gerçek YKS soruları ile pratik yapın",
+      onClick: () => navigate("/categories")
     },
     {
       icon: <Trophy className="w-8 h-8 text-primary-light" />,
       title: "Arkadaşlarınla Yarış",
       description: "Arkadaşlarınla aynı anda soru çöz, rekabet et",
+      onClick: () => navigate("/challenges")
     },
     {
       icon: <Users className="w-8 h-8 text-primary-light" />,
       title: "Sosyal Öğrenme",
       description: "Lider tablosunda yerini al, başarılarını paylaş",
+      onClick: () => navigate("/social")
     },
     {
       icon: <Brain className="w-8 h-8 text-primary-light" />,
       title: "Kişisel Gelişim",
       description: "Konu bazlı ilerleme takibi ile güçlü ve zayıf yönlerini gör",
+      onClick: () => navigate("/progress")
     },
   ];
 
@@ -62,7 +66,11 @@ const Index = () => {
       <div className="container px-4 py-16 mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
+            <Card 
+              key={index} 
+              className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={feature.onClick}
+            >
               <div className="flex flex-col items-center text-center">
                 {feature.icon}
                 <h3 className="mt-4 text-xl font-semibold text-primary">
