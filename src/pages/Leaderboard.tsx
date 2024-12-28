@@ -18,12 +18,20 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Medal } from "lucide-react";
 
+interface Profile {
+  username: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+}
+
+interface StatisticsRow {
+  correct_answers: number | null;
+  wrong_answers: number | null;
+  profile: Profile;
+}
+
 interface LeaderboardEntry {
-  profile: {
-    username: string;
-    full_name: string;
-    avatar_url: string;
-  };
+  profile: Profile;
   correct_answers: number;
   total_questions: number;
   accuracy: number;
@@ -55,9 +63,13 @@ const Leaderboard = () => {
 
       if (error) throw error;
 
-      const processedData = data
-        .reduce((acc: { [key: string]: LeaderboardEntry }, curr: any) => {
-          const username = curr.profile.username;
+      // Type assertion for the data array
+      const typedData = (data || []) as StatisticsRow[];
+
+      // Process the data with proper typing
+      const processedEntries = Object.values(
+        typedData.reduce<Record<string, LeaderboardEntry>>((acc, curr) => {
+          const username = curr.profile.username || "";
           if (!acc[username]) {
             acc[username] = {
               profile: curr.profile,
@@ -76,12 +88,10 @@ const Leaderboard = () => {
               : 0;
           return acc;
         }, {})
-        .values();
+      );
 
       setLeaderboard(
-        Array.from(processedData).sort(
-          (a, b) => b.correct_answers - a.correct_answers
-        )
+        processedEntries.sort((a, b) => b.correct_answers - a.correct_answers)
       );
     } catch (error) {
       console.error("Error fetching leaderboard:", error);
@@ -102,6 +112,10 @@ const Leaderboard = () => {
         return "text-gray-300";
     }
   };
+
+  if (loading) {
+    return <div>Yükleniyor...</div>;
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -132,7 +146,7 @@ const Leaderboard = () => {
                   </TableCell>
                   <TableCell className="flex items-center gap-4">
                     <Avatar>
-                      <AvatarImage src={entry.profile.avatar_url} />
+                      <AvatarImage src={entry.profile.avatar_url || undefined} />
                       <AvatarFallback>
                         {entry.profile.username?.[0]?.toUpperCase()}
                       </AvatarFallback>
@@ -145,9 +159,7 @@ const Leaderboard = () => {
                     </div>
                   </TableCell>
                   <TableCell>{entry.correct_answers}</TableCell>
-                  <TableCell>
-                    {entry.accuracy.toFixed(1)}%
-                  </TableCell>
+                  <TableCell>{entry.accuracy.toFixed(1)}%</TableCell>
                 </TableRow>
               ))}
             </TableBody>
