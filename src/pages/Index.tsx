@@ -2,9 +2,27 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Trophy, Users, Brain } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const features = [
     {
@@ -35,6 +53,27 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      {/* Header */}
+      <header className="container mx-auto px-4 py-4 flex justify-end">
+        {user ? (
+          <Button
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary/10"
+            onClick={() => navigate("/profile")}
+          >
+            Profil
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary/10"
+            onClick={() => navigate("/login")}
+          >
+            Giriş Yap
+          </Button>
+        )}
+      </header>
+
       {/* Hero Section */}
       <div className="container px-4 py-16 mx-auto text-center">
         <h1 className="text-4xl font-bold text-primary mb-6 animate-fade-in">
@@ -44,21 +83,25 @@ const Index = () => {
           Yapay zeka destekli soru havuzu ve sosyal öğrenme platformu
         </p>
         <div className="flex justify-center gap-4">
-          <Button
-            size="lg"
-            className="bg-primary hover:bg-primary/90"
-            onClick={() => navigate("/register")}
-          >
-            Hemen Başla
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-primary text-primary hover:bg-primary/10"
-            onClick={() => navigate("/login")}
-          >
-            Giriş Yap
-          </Button>
+          {!user && (
+            <>
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-primary/90"
+                onClick={() => navigate("/login")}
+              >
+                Hemen Başla
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-primary text-primary hover:bg-primary/10"
+                onClick={() => navigate("/login")}
+              >
+                Giriş Yap
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -91,13 +134,15 @@ const Index = () => {
         <p className="text-lg text-gray-600 mb-8">
           Hemen üye ol ve öğrenme yolculuğuna başla.
         </p>
-        <Button
-          size="lg"
-          className="bg-success hover:bg-success/90"
-          onClick={() => navigate("/register")}
-        >
-          Ücretsiz Üye Ol
-        </Button>
+        {!user && (
+          <Button
+            size="lg"
+            className="bg-success hover:bg-success/90"
+            onClick={() => navigate("/login")}
+          >
+            Ücretsiz Üye Ol
+          </Button>
+        )}
       </div>
     </div>
   );
