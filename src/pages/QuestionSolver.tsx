@@ -2,6 +2,7 @@ import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Question {
   id: number;
@@ -33,7 +34,49 @@ const QuestionSolver = () => {
   const [timeSpent, setTimeSpent] = useState(0);
   const [startTime] = useState(Date.now());
 
-  const handleSubmit = () => {
+  const updateStatistics = async (isCorrect: boolean, timeTaken: number) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Önce mevcut istatistikleri kontrol et
+      const { data: existingStats } = await supabase
+        .from("statistics")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("subject", sampleQuestion.subject)
+        .single();
+
+      if (existingStats) {
+        // Mevcut istatistikleri güncelle
+        await supabase
+          .from("statistics")
+          .update({
+            correct_answers: isCorrect
+              ? existingStats.correct_answers + 1
+              : existingStats.correct_answers,
+            wrong_answers: isCorrect
+              ? existingStats.wrong_answers
+              : existingStats.wrong_answers + 1,
+            total_time: existingStats.total_time + timeTaken,
+          })
+          .eq("id", existingStats.id);
+      } else {
+        // Yeni istatistik kaydı oluştur
+        await supabase.from("statistics").insert({
+          user_id: user.id,
+          subject: sampleQuestion.subject,
+          correct_answers: isCorrect ? 1 : 0,
+          wrong_answers: isCorrect ? 0 : 1,
+          total_time: timeTaken,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating statistics:", error);
+    }
+  };
+
+  const handleSubmit = async () => {
     if (!selectedAnswer) {
       toast({
         title: "Uyarı",
@@ -49,6 +92,8 @@ const QuestionSolver = () => {
     setIsAnswered(true);
 
     const isCorrect = parseInt(selectedAnswer) === sampleQuestion.correctAnswer;
+    
+    await updateStatistics(isCorrect, timeTaken);
     
     toast({
       title: isCorrect ? "Doğru!" : "Yanlış!",

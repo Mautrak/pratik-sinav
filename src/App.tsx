@@ -1,32 +1,34 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import QuestionSolver from "./pages/QuestionSolver";
-import Login from "./pages/Login";
-import Profile from "./pages/Profile";
+import { NavigationMenu } from "@/components/ui/navigation-menu";
+import Index from "@/pages/Index";
+import Login from "@/pages/Login";
+import Profile from "@/pages/Profile";
+import Categories from "@/pages/Categories";
+import QuestionSolver from "@/pages/QuestionSolver";
+import Statistics from "@/pages/Statistics";
+import Friends from "@/pages/Friends";
+import Leaderboard from "@/pages/Leaderboard";
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+function App() {
+  return (
+    <Router>
       <div className="min-h-screen bg-background">
+        <NavigationMenu />
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/question-solver" element={<QuestionSolver />} />
+          <Route path="/statistics" element={<Statistics />} />
+          <Route path="/friends" element={<Friends />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+        </Routes>
         <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/question-solver" element={<QuestionSolver />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
-        </BrowserRouter>
       </div>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </Router>
+  );
+}
 
 export default App;
