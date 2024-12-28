@@ -42,15 +42,17 @@ const Login = () => {
                 email_label: "E-posta",
                 password_label: "Şifre",
                 button_label: "Giriş Yap",
+                social_provider_text: "{{provider}} ile devam et",
               },
               sign_up: {
                 email_label: "E-posta",
                 password_label: "Şifre",
                 button_label: "Kayıt Ol",
+                social_provider_text: "{{provider}} ile devam et",
               },
             }
           }}
-          providers={[]}
+          providers={["google"]}
         />
       </div>
     </div>

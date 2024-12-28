@@ -9,38 +9,127 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      friendships: {
+        Row: {
+          created_at: string
+          friend_id: string | null
+          id: string
+          status: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          friend_id?: string | null
+          id?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string | null
+          id?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_friend_id_fkey"
+            columns: ["friend_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
+          achievements: Json | null
           avatar_url: string | null
           created_at: string
           full_name: string | null
           grade: string | null
           id: string
           school: string | null
+          social_links: Json | null
           updated_at: string
           username: string | null
         }
         Insert: {
+          achievements?: Json | null
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
           grade?: string | null
           id: string
           school?: string | null
+          social_links?: Json | null
           updated_at?: string
           username?: string | null
         }
         Update: {
+          achievements?: Json | null
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
           grade?: string | null
           id?: string
           school?: string | null
+          social_links?: Json | null
           updated_at?: string
           username?: string | null
         }
         Relationships: []
+      }
+      statistics: {
+        Row: {
+          correct_answers: number | null
+          created_at: string
+          id: string
+          subject: string
+          total_time: number | null
+          updated_at: string
+          user_id: string | null
+          wrong_answers: number | null
+        }
+        Insert: {
+          correct_answers?: number | null
+          created_at?: string
+          id?: string
+          subject: string
+          total_time?: number | null
+          updated_at?: string
+          user_id?: string | null
+          wrong_answers?: number | null
+        }
+        Update: {
+          correct_answers?: number | null
+          created_at?: string
+          id?: string
+          subject?: string
+          total_time?: number | null
+          updated_at?: string
+          user_id?: string | null
+          wrong_answers?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "statistics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
